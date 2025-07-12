@@ -1,0 +1,25 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "John Smith",
+      "role": "Admin",
+      "username": "john.smith",
+      "password": "admin123"
+    },
+    {
+      "id": "2",
+      "name": "Sarah Johnson",
+      "role": "Auditor",
+      "username": "sarah.johnson",
+      "password": "auditor123"
+    },
+    {
+      "id": "3",
+      "name": "Mike Wilson",
+      "role": "Viewer",
+      "username": "mike.wilson",
+      "password": "viewer123"
+    }
+  ]
+}

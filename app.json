@@ -1,4 +1,6 @@
 {
-  "name": "AwesomeProject",
-  "displayName": "AwesomeProject"
+  "name": "SmartAudit",
+  "slug": "smartaudit",
+  "version": "1.0.0",
+  "orientation": "portrait"
 }
