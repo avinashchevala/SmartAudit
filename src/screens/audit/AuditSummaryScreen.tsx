@@ -25,7 +25,10 @@ const AuditSummaryScreen: React.FC<NavigationProps> = ({
   const { handleLogout } = useLogout();
 
   const handleGoToHistory = () => {
-    navigation.navigate('AuditHistory');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainTabs' }],
+    });;
   };
 
   const handleCreateNew = () => {
@@ -169,9 +172,8 @@ const AuditSummaryScreen: React.FC<NavigationProps> = ({
               style={[
                 styles.progressFill,
                 {
-                  width: `${
-                    (getCheckedItemsCount() / getTotalItemsCount()) * 100
-                  }%`,
+                  width: `${(getCheckedItemsCount() / getTotalItemsCount()) * 100
+                    }%`,
                 },
               ]}
             />

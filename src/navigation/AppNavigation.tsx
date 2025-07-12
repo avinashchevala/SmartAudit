@@ -126,7 +126,7 @@ const AppNavigation = () => {
             component={AuditSummaryScreen}
             options={{
               title: 'Audit Summary',
-              headerLeft: () => null, // Prevent going back
+              headerShown: false,
             }}
           />
           <Stack.Screen

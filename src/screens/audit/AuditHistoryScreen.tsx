@@ -27,6 +27,7 @@ const AuditHistoryScreen: React.FC<NavigationProps> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const loadAudits = async () => {
+          await clearDraft();
     try {
       const auditData = await StorageService.getAudits();
       setAudits(
@@ -54,7 +55,6 @@ const clearDraft = async () => {
 
   useFocusEffect(
     useCallback(() => {
-      clearDraft();
       loadAudits();
     }, []),
   );

@@ -81,7 +81,10 @@ const AuditFormStep1: React.FC<NavigationProps> = ({ navigation, route }) => {
         {
           text: 'Cancel Audit',
           style: 'destructive',
-          onPress: () => navigation.goBack(),
+          onPress: async() => {
+            await StorageService.clearDraft();
+            navigation.goBack();
+          },
         },
       ],
     );
