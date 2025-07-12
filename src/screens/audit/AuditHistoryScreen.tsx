@@ -1,3 +1,16 @@
+/**
+ * Audit History Screen
+ * 
+ * Displays a list of all completed audits with filtering and management capabilities.
+ * Features:
+ * - View audit history with sorting by creation date
+ * - Role-based access control for viewing/deleting audits
+ * - Pull-to-refresh functionality
+ * - Navigation to detailed audit view
+ * - Empty state handling
+ * - Admin-only audit deletion
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
@@ -20,16 +33,25 @@ import { useLogout } from '../../hooks/useLogout';
 import { useRole } from '../../hooks/useRole';
 
 const AuditHistoryScreen: React.FC<NavigationProps> = ({ navigation }) => {
+  // Hook to get current user and role information
   const { user } = useRole();
+  // Hook to handle user logout functionality
   const { handleLogout } = useLogout();
+  
+  // State management for audit data and UI states
   const [audits, setAudits] = useState<AuditFormData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  /**
+   * Loads audit data from storage and sorts by creation date (newest first)
+   * Also clears any draft data to ensure clean state
+   */
   const loadAudits = async () => {
-          await clearDraft();
+    await clearDraft();
     try {
       const auditData = await StorageService.getAudits();
+      // Sort audits by creation date in descending order (newest first)
       setAudits(
         auditData.sort(
           (a, b) =>
@@ -45,7 +67,11 @@ const AuditHistoryScreen: React.FC<NavigationProps> = ({ navigation }) => {
     }
   };
 
-const clearDraft = async () => {
+  /**
+   * Clears any draft audit data from storage
+   * Ensures clean state when returning to history screen
+   */
+  const clearDraft = async () => {
     try {
       await StorageService.clearDraft();
     } catch (error) {
@@ -53,25 +79,36 @@ const clearDraft = async () => {
     }
   };
 
+  // Load audits when screen comes into focus
   useFocusEffect(
     useCallback(() => {
       loadAudits();
     }, []),
   );
 
-  
-
+  /**
+   * Handles pull-to-refresh functionality
+   */
   const handleRefresh = () => {
     setRefreshing(true);
     loadAudits();
   };
 
+  /**
+   * Handles audit deletion with role-based access control
+   * Only Admins can delete audits with confirmation dialog
+   * 
+   * @param auditId - Unique identifier of the audit to delete
+   * @param auditTitle - Title of the audit for confirmation dialog
+   */
   const handleDeleteAudit = (auditId: string, auditTitle: string) => {
+    // Check if user has admin permissions
     if (user?.role !== 'Admin') {
       Alert.alert('Access Denied', 'Only Admins can delete audits');
       return;
     }
 
+    // Show confirmation dialog before deletion
     Alert.alert(
       'Delete Audit',
       `Are you sure you want to delete "${auditTitle}"? This action cannot be undone.`,
@@ -83,7 +120,7 @@ const clearDraft = async () => {
           onPress: async () => {
             try {
               await StorageService.deleteAudit(auditId);
-              loadAudits();
+              loadAudits(); // Refresh the list after deletion
               Alert.alert('Success', 'Audit deleted successfully');
             } catch (error) {
               Alert.alert('Error', 'Failed to delete audit');
@@ -94,10 +131,21 @@ const clearDraft = async () => {
     );
   };
 
+  /**
+   * Navigates to audit detail screen for viewing
+   * 
+   * @param audit - Complete audit data to display
+   */
   const handleViewAudit = (audit: AuditFormData) => {
     navigation.navigate('AuditDetail', { audit });
   };
 
+  /**
+   * Formats timestamp for display in audit list
+   * 
+   * @param dateString - ISO date string to format
+   * @returns Formatted date and time string
+   */
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return (
@@ -107,19 +155,41 @@ const clearDraft = async () => {
     );
   };
 
+  /**
+   * Gets the color associated with a priority level
+   * 
+   * @param priority - Priority level string
+   * @returns Hex color code for the priority
+   */
   const getPriorityColor = (priority: string): string => {
     const priorityItem = PRIORITY_LEVELS.find(p => p.value === priority);
     return priorityItem?.color || COLORS.gray;
   };
 
+  /**
+   * Generates star rating display string
+   * 
+   * @param rating - Rating value (1-5)
+   * @returns String of filled and empty stars
+   */
   const getRatingStars = (rating: number): string => {
     return '★'.repeat(rating) + '☆'.repeat(5 - rating);
   };
 
+  /**
+   * Checks if current user can delete audits
+   * 
+   * @returns True if user is Admin
+   */
   const canDeleteAudit = (): boolean => {
     return user?.role === 'Admin';
   };
 
+  /**
+   * Checks if current user can view audit details
+   * 
+   * @returns True if user has any valid role
+   */
   const canViewAudit = (): boolean => {
     return (
       user?.role === 'Admin' ||
@@ -128,12 +198,19 @@ const clearDraft = async () => {
     );
   };
 
+  /**
+   * Renders individual audit item in the list
+   * Displays audit information with role-based action buttons
+   * 
+   * @param item - Audit data to render
+   */
   const renderAuditItem = ({ item }: { item: AuditFormData }) => (
     <Card style={styles.auditCard}>
       <TouchableOpacity
         onPress={() => canViewAudit() && handleViewAudit(item)}
         disabled={!canViewAudit()}
       >
+        {/* Audit header with title and priority badge */}
         <View style={styles.auditHeader}>
           <Text style={styles.auditTitle}>{item.auditTitle}</Text>
           <View
@@ -146,16 +223,19 @@ const clearDraft = async () => {
           </View>
         </View>
 
+        {/* Location and date information */}
         <View style={styles.auditInfo}>
           <Text style={styles.auditLocation}>{item.auditLocation}</Text>
           <Text style={styles.auditDate}>{formatDate(item.createdAt)}</Text>
         </View>
 
+        {/* Audit type and creator information */}
         <View style={styles.auditMeta}>
           <Text style={styles.auditType}>{item.auditType}</Text>
           <Text style={styles.auditCreator}>by {item.createdBy}</Text>
         </View>
 
+        {/* Overall rating display */}
         <View style={styles.auditRating}>
           <Text style={styles.ratingLabel}>Overall Rating:</Text>
           <Text style={styles.ratingStars}>
@@ -164,6 +244,7 @@ const clearDraft = async () => {
           <Text style={styles.ratingValue}>({item.overallRating}/5)</Text>
         </View>
 
+        {/* Admin-only delete button */}
         {canDeleteAudit() && (
           <View style={styles.actions}>
             <Button
@@ -179,6 +260,10 @@ const clearDraft = async () => {
     </Card>
   );
 
+  /**
+   * Renders empty state when no audits are available
+   * Shows different messages based on user role
+   */
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Text style={styles.emptyTitle}>No Audits Found</Text>
@@ -187,6 +272,7 @@ const clearDraft = async () => {
           ? 'Start by creating your first audit'
           : 'No audits have been submitted yet'}
       </Text>
+      {/* Commented out - create button is in action bar instead */}
       {/* {user?.role === 'Auditor' && (
         <Button
           title="Create New Audit"
@@ -199,6 +285,7 @@ const clearDraft = async () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header section with title, logout button, and audit count */}
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Audit History</Text>
@@ -212,6 +299,7 @@ const clearDraft = async () => {
         </Text>
       </View>
 
+      {/* Action bar for Auditors to create new audits */}
       {user?.role === 'Auditor' && (
         <View style={styles.actionBar}>
           <Button
@@ -222,6 +310,7 @@ const clearDraft = async () => {
         </View>
       )}
 
+      {/* Main audit list with pull-to-refresh */}
       <FlatList
         data={audits}
         renderItem={renderAuditItem}

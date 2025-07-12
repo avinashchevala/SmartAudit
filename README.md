@@ -31,12 +31,12 @@ src/
 │   ├── forms/          # Form-specific components
 │   └── ui/             # Reusable UI components
 ├── contexts/           # React Context providers
+├── forms/              # Form-specific components
 ├── hooks/              # Custom React hooks
 ├── navigation/         # Navigation configuration
 ├── screens/
 │   ├── auth/          # Authentication screens
 │   ├── audit/         # Audit-related screens
-│   ├── nav/           # Navigation screens
 │   └── policy/        # Policy viewer screens
 ├── services/          # Service layer (Storage, API)
 ├── types/             # TypeScript type definitions
@@ -48,7 +48,7 @@ src/
 
 ### Prerequisites
 - Node.js (>= 18)
-- React Native CLI
+- React Native Community CLI
 - Android Studio (for Android development)
 - Xcode (for iOS development)
 
@@ -67,7 +67,7 @@ src/
 
 3. **Install iOS dependencies (iOS only)**
    ```bash
-   cd ios && pod install && cd ..
+   cd ios && bundle install && bundle exec pod install
    ```
 
 4. **Install required packages**
@@ -77,24 +77,18 @@ src/
 
 ### Android Setup
 
-1. **Configure Vector Icons**
-   - Add the following to `android/app/build.gradle`:
-   ```gradle
-   apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+1. **Run the app**
+   ```bash
+   npm start
    ```
-
-2. **Run the app**
+   Open a new terminal and run:
    ```bash
    npm run android
    ```
 
 ### iOS Setup
 
-1. **Configure Vector Icons**
-   - Add font files to iOS project through Xcode
-   - Update `Info.plist` with font references
-
-2. **Run the app**
+1. **Run the app**
    ```bash
    npm run ios
    ```
@@ -167,122 +161,33 @@ src/
 - **Consistent Styling**: Centralized theme and constants
 - **Error Handling**: Proper error boundaries and user feedback
 
-### Testing
-```bash
-npm test
-```
 
-### Linting
-```bash
-npm run lint
-```
+# Developer Documentation
 
-## Troubleshooting
+## Code Organization
 
-### Common Issues
+The project follows a modular architecture with clear separation of concerns:
 
-1. **Metro bundler issues**
-   ```bash
-   npx react-native start --reset-cache
-   ```
+### Key Architectural Decisions
+- **TypeScript**: Used throughout for type safety and better developer experience
+- **React Hook Form**: For form management with Yup validation
+- **React Navigation**: For navigation with role-based routing
+- **AsyncStorage**: For local data persistence
+- **Context API**: For global state management (user authentication)
 
-2. **Android build errors**
-   ```bash
-   cd android && ./gradlew clean && cd ..
-   ```
+### Code Comments
+All major files include comprehensive comments explaining:
+- Component/function purpose and features
+- Parameter descriptions and types
+- Implementation details and business logic
+- Error handling and edge cases
 
-3. **iOS build errors**
-   ```bash
-   cd ios && pod install && cd ..
-   ```
+### Form Validation
+- Uses Yup schemas for consistent validation across all forms
+- Error messages are user-friendly and actionable
+- Validation happens both on submit and field-level
 
-4. **Vector Icons not showing**
-   - Ensure fonts are properly linked in native projects
-   - Check that gradle configuration is applied
-
-### Performance Optimization
-- **Image optimization**: Images are resized before storage
-- **Lazy loading**: Components load data on demand
-- **Memory management**: Proper cleanup of listeners and timers
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is for internal use and educational purposes.
-
-## Technical Specifications
-
-- **React Native**: 0.80.1
-- **TypeScript**: 5.0.4
-- **Navigation**: React Navigation 7.x
-- **Storage**: AsyncStorage 2.x
-- **Minimum iOS**: 12.0
-- **Minimum Android**: API 21 (Android 5.0)
-
-## Future Enhancements
-
-- [ ] Data export functionality
-- [ ] Push notifications for audit reminders
-- [ ] Offline synchronization
-- [ ] Advanced reporting features
-- [ ] Dark mode support
-- [ ] Multi-language support
-
----
-
-For technical support or questions, please refer to the documentation or contact the development team.
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### Storage Strategy
+- All data persists locally using AsyncStorage
+- Draft functionality for incomplete audits
+- Automatic data loading on app startup

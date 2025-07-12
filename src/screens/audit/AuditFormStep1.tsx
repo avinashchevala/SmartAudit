@@ -37,28 +37,6 @@ const AuditFormStep1: React.FC<NavigationProps> = ({ navigation, route }) => {
     },
   });
 
-  // useEffect(() => {
-  //   loadDraft();
-  // }, []);
-
-  // const loadDraft = async () => {
-  //   try {
-  //     const draft = await StorageService.getDraft();
-  //     if (draft) {
-  //       // Set form values from draft
-  //       setValue('auditTitle', draft.auditTitle || '');
-  //       setValue('auditLocation', draft.auditLocation || '');
-  //       setValue(
-  //         'auditDate',
-  //         draft.auditDate || new Date().toISOString().split('T')[0],
-  //       );
-  //       setValue('auditType', draft.auditType || AUDIT_TYPES[0]);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error loading draft:', error);
-  //   }
-  // };
-
   const onSubmit = async (data: AuditStep1FormData) => {
     try {
       // Save draft

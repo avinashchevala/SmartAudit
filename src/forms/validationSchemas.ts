@@ -1,6 +1,23 @@
+/**
+ * Validation Schemas
+ * 
+ * Yup-based validation schemas for form validation throughout the application.
+ * Provides type-safe validation with clear error messages for user feedback.
+ * 
+ * Features:
+ * - User login validation
+ * - Multi-step audit form validation
+ * - Field-level validation rules
+ * - Custom error messages
+ * - Type safety with TypeScript
+ */
+
 import * as yup from 'yup';
 
-// User Login Schema
+/**
+ * User Login Validation Schema
+ * Validates user authentication form fields
+ */
 export const loginValidationSchema = yup.object().shape({
   username: yup
     .string()
@@ -16,7 +33,10 @@ export const loginValidationSchema = yup.object().shape({
     .required('Role is required'),
 });
 
-// Audit Form Step 1 Schema
+/**
+ * Audit Form Step 1 Validation Schema
+ * Validates basic audit information (title, location, date, type)
+ */
 export const auditStep1ValidationSchema = yup.object().shape({
   auditTitle: yup
     .string()
@@ -35,7 +55,10 @@ export const auditStep1ValidationSchema = yup.object().shape({
   auditType: yup.string().required('Audit type is required'),
 });
 
-// Audit Form Step 2 Schema
+/**
+ * Audit Form Step 2 Validation Schema
+ * Validates rating fields and checklist items
+ */
 export const auditStep2ValidationSchema = yup.object().shape({
   overallRating: yup
     .number()
@@ -60,7 +83,10 @@ export const auditStep2ValidationSchema = yup.object().shape({
   checklistItems: yup.object().required('Checklist items are required'),
 });
 
-// Audit Form Step 3 Schema
+/**
+ * Audit Form Step 3 Validation Schema
+ * Validates findings, recommendations, and optional fields
+ */
 export const auditStep3ValidationSchema = yup.object().shape({
   findings: yup
     .string()
@@ -87,14 +113,19 @@ export const auditStep3ValidationSchema = yup.object().shape({
     .max(5, 'Maximum 5 images allowed'),
 });
 
-// Combined Audit Form Schema
+/**
+ * Combined Audit Form Validation Schema
+ * Merges all step schemas for complete form validation
+ */
 export const fullAuditValidationSchema = yup.object().shape({
   ...auditStep1ValidationSchema.fields,
   ...auditStep2ValidationSchema.fields,
   ...auditStep3ValidationSchema.fields,
 });
 
-// Export validation schemas
+/**
+ * Exported validation schemas object for easy access
+ */
 export const validationSchemas = {
   login: loginValidationSchema,
   auditStep1: auditStep1ValidationSchema,

@@ -1,10 +1,24 @@
+/**
+ * App Navigation Configuration
+ * 
+ * Main navigation setup for the SmartAudit application using React Navigation.
+ * Implements a hybrid navigation pattern with stack and tab navigators.
+ * 
+ * Features:
+ * - Role-based navigation (different tabs based on user role)
+ * - Stack navigation for multi-step audit forms
+ * - Tab navigation for main app sections
+ * - Consistent styling and theming
+ * - Authentication-aware routing
+ */
+
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Text, View, StyleSheet } from 'react-native';
 
-// Import screens
+// Import all screen components
 import Login from '../screens/auth/Login';
 import AuditFormStep1 from '../screens/audit/AuditFormStep1';
 import AuditFormStep2 from '../screens/audit/AuditFormStep2';
@@ -17,10 +31,14 @@ import PolicyViewerScreen from '../screens/policy/PolicyViewerScreen';
 import { COLORS, FONT_SIZES } from '../constants';
 import { useRole } from '../hooks/useRole';
 
+// Create navigation instances
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Simple icon component since we don't have react-native-vector-icons
+/**
+ * Simple tab icon component using emoji
+ * Used as placeholder since vector icons are not configured
+ */
 const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => (
   <View style={styles.tabIcon}>
     <Text style={[styles.tabIconText, focused && styles.tabIconTextFocused]}>
@@ -29,6 +47,10 @@ const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => (
   </View>
 );
 
+/**
+ * Main tab navigator component
+ * Shows different tabs based on user role
+ */
 const MainTabs = () => {
   const { user } = useRole();
 
@@ -44,6 +66,7 @@ const MainTabs = () => {
         },
       }}
     >
+      {/* History tab - available to all authenticated users */}
       <Tab.Screen
         name="AuditHistory"
         component={AuditHistoryScreen}
@@ -53,6 +76,7 @@ const MainTabs = () => {
         }}
       />
 
+      {/* New Audit tab - only visible to Auditors */}
       {user?.role === 'Auditor' && (
         <Tab.Screen
           name="AuditFormStep1"
@@ -66,6 +90,7 @@ const MainTabs = () => {
         />
       )}
 
+      {/* Policy tab - available to all authenticated users */}
       <Tab.Screen
         name="PolicyViewer"
         component={PolicyViewerScreen}
@@ -78,6 +103,10 @@ const MainTabs = () => {
   );
 };
 
+/**
+ * Main app navigation component
+ * Handles authentication flow and main app navigation
+ */
 const AppNavigation = () => {
   const { user } = useRole();
 
@@ -94,18 +123,22 @@ const AppNavigation = () => {
           },
         }}
       >
+        {/* Login screen - entry point for unauthenticated users */}
         <Stack.Screen
           name="Login"
           component={Login}
           options={{ headerShown: false }}
         />
 
+        {/* Main app screens - available after authentication */}
         <>
           <Stack.Screen
             name="MainTabs"
             component={MainTabs}
             options={{ headerShown: false }}
           />
+          
+          {/* Multi-step audit creation flow */}
           <Stack.Screen
             name="AuditFormStep1"
             component={AuditFormStep1}
@@ -121,6 +154,8 @@ const AppNavigation = () => {
             component={AuditFormStep3}
             options={{ title: 'New Audit - Step 3' }}
           />
+          
+          {/* Audit summary and detail screens */}
           <Stack.Screen
             name="AuditSummary"
             component={AuditSummaryScreen}
@@ -134,6 +169,8 @@ const AppNavigation = () => {
             component={AuditDetailScreen}
             options={{ title: 'Audit Details' }}
           />
+          
+          {/* Additional screens accessible from tabs */}
           <Stack.Screen
             name="AuditHistory"
             component={AuditHistoryScreen}

@@ -1,3 +1,18 @@
+/**
+ * Login Screen
+ * 
+ * Authentication screen for the SmartAudit application.
+ * Handles user login with role-based access and credential validation.
+ * 
+ * Features:
+ * - Role-based authentication (Admin, Auditor, Viewer)
+ * - Form validation using react-hook-form and Yup
+ * - Demo credentials display for easy testing
+ * - Secure password handling
+ * - Error handling with user feedback
+ * - Navigation to main app after successful login
+ */
+
 import React from 'react';
 import {
   View,
@@ -22,11 +37,16 @@ import { COLORS, SPACING, FONT_SIZES } from '../../constants';
 import usersData from '../../utils/users.json';
 import { useRole } from '../../hooks/useRole';
 
+// Available role options for the picker
 const ROLES: string[] = ['Admin', 'Auditor', 'Viewer'];
 
+/**
+ * Login screen component for user authentication
+ */
 const Login: React.FC<NavigationProps> = ({ navigation }) => {
   const { setUser } = useRole();
 
+  // Form setup with validation
   const {
     control,
     handleSubmit,
@@ -36,10 +56,18 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
     defaultValues: {
       username: '',
       password: '',
-      role: 'Auditor',
+      role: 'Auditor', // Default to Auditor role
     },
   });
 
+  /**
+   * Validates user credentials against the JSON user database
+   * 
+   * @param username - Username entered by user
+   * @param password - Password entered by user
+   * @param role - Selected role
+   * @returns User object if valid, undefined otherwise
+   */
   const validateUser = (username: string, password: string, role: UserRole) => {
     const user = usersData.users.find(
       u =>
@@ -48,8 +76,14 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
     return user;
   };
 
+  /**
+   * Handles form submission and user authentication
+   * 
+   * @param data - Form data from react-hook-form
+   */
   const onSubmit = async (data: LoginFormData) => {
     try {
+      // Validate user credentials
       const validUser = validateUser(
         data.username,
         data.password,
@@ -64,13 +98,17 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
         return;
       }
 
+      // Create user object for context
       const user: User = {
         id: validUser.id,
         name: validUser.name,
         role: validUser.role as UserRole,
       };
 
+      // Save user to context and storage
       await setUser(user);
+      
+      // Navigate to main app
       navigation.replace('MainTabs');
     } catch (error) {
       Alert.alert('Error', 'Failed to login. Please try again.');
@@ -81,6 +119,7 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
+        {/* App title and description header */}
         <View style={styles.header}>
           <Text style={styles.title}>Internal Audit App</Text>
           <Text style={styles.subtitle}>
@@ -88,7 +127,9 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
           </Text>
         </View>
 
+        {/* Login form container */}
         <Card title="Login Information">
+          {/* Role selection picker */}
           <FormPicker
             name="role"
             control={control}
@@ -98,6 +139,7 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
             required
           />
 
+          {/* Username input field */}
           <FormInput
             name="username"
             control={control}
@@ -108,6 +150,7 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
             autoCorrect={false}
           />
 
+          {/* Password input field */}
           <FormInput
             name="password"
             control={control}
@@ -120,6 +163,7 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
           />
         </Card>
 
+        {/* Login submit button */}
         <Button
           title="Login"
           onPress={handleSubmit(onSubmit)}
@@ -127,6 +171,7 @@ const Login: React.FC<NavigationProps> = ({ navigation }) => {
           style={styles.loginButton}
         />
 
+        {/* Demo credentials display for testing */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             Demo Credentials:{'\n'}

@@ -1,7 +1,25 @@
+/**
+ * Storage Service
+ * 
+ * Handles all data persistence operations using AsyncStorage.
+ * Provides methods for CRUD operations on audits, draft management,
+ * and data cleanup functionality.
+ * 
+ * Features:
+ * - Audit data persistence (create, read, update, delete)
+ * - Draft audit data management
+ * - Error handling with logging
+ * - Type-safe operations with TypeScript interfaces
+ */
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuditFormData } from '../types';
 import { STORAGE_KEYS } from '../constants';
 
+/**
+ * Static service class for handling all storage operations
+ * Uses AsyncStorage for persistent data storage on device
+ */
 export class StorageService {
   /**
    * Save audit data to AsyncStorage
